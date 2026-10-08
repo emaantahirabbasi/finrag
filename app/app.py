@@ -11,7 +11,7 @@ try:
 except Exception:
     pass
 
-st.set_page_config(page_title="FinRAG", page_icon="📊", layout="wide")
+st.set_page_config(page_title="FinRAG — Financial Document Q&A", page_icon="📊", layout="wide")
 
 st.markdown("""
 <style>
@@ -19,6 +19,9 @@ st.markdown("""
     .subtitle { font-size: 1rem; color: #666; margin-top: 0; margin-bottom: 2rem; }
     .card { background: #f9fbfd; padding: 20px; border-radius: 8px; border: 1px solid #e0e6ed; margin-bottom: 15px; }
     .highlight { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; }
+    .result-box { background: #e7f3ff; border-left: 4px solid #1f3a5f; padding: 15px; border-radius: 4px; margin: 10px 0; }
+    .verdict-supported { color: #0a7c2f; font-weight: bold; }
+    .verdict-partial { color: #d97706; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -27,16 +30,12 @@ st.markdown('<p class="subtitle">Hallucination-Aware RAG System for Financial Do
 
 st.markdown("""
 <div class="highlight">
-<strong>⚠️ Live demo notice:</strong> This cloud deployment runs on Streamlit's free tier, which has strict limits on the Google Gemini API (used for embeddings + generation). Full functionality is demonstrated in the project's CLI outputs and local setup. See the <a href="https://github.com/emaantahirabbasi/finrag" target="_blank">GitHub repo</a> for full code and instructions.
+<strong>⚠️ Live demo notice:</strong> This cloud deployment runs on Streamlit's free tier, which has strict limits on the Google Gemini API (used for embeddings + generation). Full functionality is demonstrated in the verified results below and can be reproduced locally by following the instructions. See the <a href="https://github.com/emaantahirabbasi/finrag" target="_blank">GitHub repo</a> for full code and setup.
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown("## About This Project")
-st.markdown("""
-<div class="card">
-<strong>FinRAG</strong> is a production-grade Retrieval-Augmented Generation (RAG) system for financial document Q&A, with an explicit hallucination verification layer.
-</div>
-""", unsafe_allow_html=True)
+st.info("**FinRAG** is a production-grade Retrieval-Augmented Generation (RAG) system for financial document Q&A, with an explicit hallucination verification layer.")
 
 st.markdown("### 🎯 What It Does")
 st.markdown("""
@@ -48,19 +47,22 @@ st.markdown("""
 """)
 
 st.markdown("### 📊 Verified Results (from local run)")
+
 st.markdown("""
-<div class="card">
+<div class="result-box">
 <strong>Q:</strong> What was Apple's total net sales in 2024?<br><br>
 <strong>A:</strong> Apple's total net sales in 2024 was <strong>$391,035 million</strong> [Source 1, Source 2, Source 4].<br><br>
-<strong>Verification:</strong> ✅ <strong>VERDICT: SUPPORTED</strong> | Confidence: HIGH
+<strong>Verification:</strong> <span class="verdict-supported">✅ VERDICT: SUPPORTED</span> | Confidence: HIGH
 </div>
+""", unsafe_allow_html=True)
 
-<div class="card">
+st.markdown("""
+<div class="result-box">
 <strong>Q:</strong> Compare Apple's and Microsoft's revenue.<br><br>
 <strong>A:</strong> Apple reported $391,035 million vs Microsoft's $245,122 million — Apple higher by $145,913 million.<br><br>
-<strong>Verification:</strong> ⚠️ <strong>VERDICT: PARTIAL</strong> | 1 unsupported claim detected:<br>
+<strong>Verification:</strong> <span class="verdict-partial">⚠️ VERDICT: PARTIAL</span> | 1 unsupported claim detected:<br>
 <em>"$145,913 million difference" — this is a derived calculation, not stated in the sources.</em><br><br>
-<small>This is the hallucination detection working as designed — it distinguishes between sourced claims and inferred ones.</small>
+<small>✅ This is the hallucination detection working as designed — it distinguishes between sourced claims and inferred ones.</small>
 </div>
 """, unsafe_allow_html=True)
 
@@ -71,7 +73,7 @@ st.markdown("""
 - **Vector DB:** ChromaDB (2,064 chunks)
 - **Framework:** LangChain
 - **UI:** Streamlit
-- **Docs:** PyPDF, BeautifulSoup
+- **Document Parsing:** PyPDF, BeautifulSoup
 """)
 
 st.markdown("### 🚀 Run Locally")
@@ -87,9 +89,12 @@ streamlit run app/app.py
 
 st.markdown("### 📎 Links")
 st.markdown("""
-- [GitHub Repository](https://github.com/emaantahirabbasi/finrag)
-- [README with Architecture](https://github.com/emaantahirabbasi/finrag/blob/main/README.md)
+- 📂 [GitHub Repository](https://github.com/emaantahirabbasi/finrag)
+- 📖 [README with Architecture](https://github.com/emaantahirabbasi/finrag/blob/main/README.md)
 """)
 
+st.markdown("### 👤 Author")
+st.write("Emaan Tahir Abbasi — Data Science Student, Women University of Azad Jammu & Kashmir")
+
 st.divider()
-st.caption("Built by Emaan Tahir Abbasi — Data Science Student, Women University of Azad Jammu & Kashmir")
+st.caption("FinRAG v1.0 · Built with Streamlit, LangChain, ChromaDB, and Google Gemini")
