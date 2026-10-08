@@ -1,10 +1,5 @@
-streamlit==1.65.0
-langchain==0.3.25
-langchain-core==0.3.65
-langchain-community==0.3.24
-langchain-google-genai==2.1.5
-langchain-chroma==0.2.4
-chromadb==0.5.23
-pypdf==5.1.0
-beautifulsoup4==4.12.3
-python-dotenv==1.0.1
+streamlit
+langchain-google-genai
+langchain-chroma
+langchain-core
+python-dotenv
