@@ -30,6 +30,8 @@ PASS 2: Gemini verifies each claim against sources
 ↓
 Output: answer + sources + verdict (SUPPORTED/PARTIAL/UNSUPPORTED)
 
+text
+
 ## Documents Ingested
 
 - Apple — FY2024 10-K (543 chunks)
@@ -42,7 +44,7 @@ Output: answer + sources + verdict (SUPPORTED/PARTIAL/UNSUPPORTED)
 ## Tech Stack
 
 - **LLM:** Google Gemini 3.8 Flash
-- **Embeddings:** `gemini-embedding-001`
+- **Embeddings:** gemini-embedding-001
 - **Vector DB:** ChromaDB (local, persistent)
 - **Framework:** LangChain
 - **Document Parsing:** PyPDF, BeautifulSoup
@@ -61,7 +63,7 @@ Output: answer + sources + verdict (SUPPORTED/PARTIAL/UNSUPPORTED)
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Set up your Gemini API key in .env
+# 2. Set up your Gemini API key
 echo "GEMINI_API_KEY=your_key_here" > .env
 
 # 3. Add SEC filings to data/ folder
@@ -76,19 +78,19 @@ python src/query.py
 # 6. Launch the web app
 streamlit run app/app.py
 Example Output
-Question: "What was Apple's total net sales in 2024?"
+Q: What was Apple's total net sales in 2024?
 
-Answer: Apple's total net sales in 2024 was $391,035 million [Source 1, Source 2, Source 4].
+A: Apple's total net sales in 2024 was $391,035 million [Source 1, Source 2, Source 4].
 
 Verification: VERDICT: SUPPORTED | CONFIDENCE: HIGH
 
-Question: "Compare Apple's and Microsoft's revenue."
+Q: Compare Apple's and Microsoft's revenue.
 
-Answer: Apple reported $391,035 million vs Microsoft's $245,122 million — Apple higher by $145,913 million.
+A: Apple reported $391,035 million vs Microsoft's $245,122 million — Apple higher by $145,913 million.
 
 Verification: VERDICT: PARTIAL | 1 unsupported claim:
 
-"Apple was higher by $145,913 million" — this difference is a derived calculation, not stated in the sources.
+"Apple was higher by $145,913 million" — this is a derived calculation, not stated in the sources.
 
 This is the system working as intended — it distinguishes between claims directly in sources and claims inferred from them.
 
@@ -105,43 +107,3 @@ Project Status
 
 Author
 Emaan Tahir Abbasi — Data Science Student, Women University of Azad Jammu & Kashmir
-
-text
-
-**Save (Ctrl+S), close Notepad.**
-
-## Verify It's There
-dir README.md
-
-text
-
-Should show the file exists.
-
-## Re-add + Check Status
-git add .
-
-text
-git status
-
-text
-
-You should now see **8 files** (added `README.md`):
-new file: .gitignore
-new file: README.md ← new
-new file: app/app.py
-new file: requirements.txt
-new file: src/diagnose.py
-new file: src/ingest.py
-new file: src/query.py
-new file: src/verify.py
-
-text
-
----
-
-**Do this:**
-1. Create `README.md` with the content above
-2. `git add .`
-3. `git status`
-
-**Paste the output.** Then we commit and push.
