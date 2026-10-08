@@ -8,6 +8,14 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
+# Read from Streamlit secrets if available (for cloud deployment)
+try:
+    import streamlit as st
+    if "GEMINI_API_KEY" in st.secrets:
+        os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    pass
+
 MODEL_NAME = "gemini-3.8-flash"
 
 VERIFICATION_PROMPT = """You are a fact-verification assistant. You will be given:
