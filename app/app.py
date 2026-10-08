@@ -10,7 +10,7 @@ from langchain_core.runnables import RunnablePassthrough
 
 load_dotenv()
 
-# Read from Streamlit secrets if available (for cloud deployment)
+# ---------- Read from Streamlit secrets if available ----------
 try:
     if "GEMINI_API_KEY" in st.secrets:
         os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
@@ -20,6 +20,26 @@ except Exception:
 CHROMA_DIR = Path("chroma_db")
 MODEL_NAME = "gemini-3.8-flash"
 
+# ---------- Auto-download chroma_db if missing ----------
+CHROMA_ZIP_URL = "https://github.com/emaantahirabbasi/finrag/releases/download/v1.0-db/chroma_db.zip"
+
+def ensure_chroma_db():
+    if CHROMA_DIR.exists() and any(CHROMA_DIR.iterdir()):
+        return
+    import urllib.request
+    import zipfile
+    import tempfile
+    st.info("⏳ Downloading vector database (~39 MB, first run only)...")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
+        urllib.request.urlretrieve(CHROMA_ZIP_URL, tmp.name)
+        zip_path = tmp.name
+    st.info("📦 Extracting...")
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        zf.extractall(".")
+    os.remove(zip_path)
+    st.success("✅ Database ready!")
+
+# ---------- Page config ----------
 st.set_page_config(
     page_title="FinRAG — Financial Document Q&A",
     page_icon="📊",
@@ -49,37 +69,19 @@ with st.sidebar:
     """)
     st.divider()
     st.caption("Built as a Data Science portfolio project")
- # ---------- Auto-download chroma_db if missing (for Streamlit Cloud) ----------
-CHROMA_ZIP_URL = "https://github.com/emaantahirabbasi/finrag/releases/download/v1.0-db/chroma_db.zip"
-CHROMA_DIR = Path("chroma_db")
 
-def ensure_chroma_db():
-    """Download and extract chroma_db if it doesn't exist."""
-    if CHROMA_DIR.exists() and any(CHROMA_DIR.iterdir()):
-        return
-    
-    import urllib.request
-    import zipfile
-    import tempfile
-    
-    st.info("⏳ Downloading vector database (~39 MB, first run only)...")
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
-        urllib.request.urlretrieve(CHROMA_ZIP_URL, tmp.name)
-        zip_path = tmp.name
-    
-    st.info("📦 Extracting...")
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        zf.extractall(".")
-    
-    os.remove(zip_path)
-    st.success("✅ Database ready!")
-
-ensure_chroma_db()
+# ---------- Load chain (cached) ----------
 @st.cache_resource
 def load_chain():
+    # Force API key from secrets at load time
+    api_key = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in secrets or environment")
+    os.environ["GEMINI_API_KEY"] = api_key
+    
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/gemini-embedding-001",
-        google_api_key=os.getenv("GEMINI_API_KEY")
+        google_api_key=api_key
     )
     vectorstore = Chroma(
         persist_directory=str(CHROMA_DIR),
@@ -89,7 +91,7 @@ def load_chain():
 
     llm = ChatGoogleGenerativeAI(
         model=MODEL_NAME,
-        google_api_key=os.getenv("GEMINI_API_KEY"),
+        google_api_key=api_key,
         temperature=0
     )
 
@@ -126,6 +128,10 @@ Answer:"""
     )
     return chain, retriever
 
+# ---------- Ensure DB is present ----------
+ensure_chroma_db()
+
+# ---------- UI ----------
 st.subheader("Ask a question about the filings")
 
 example_qs = [
@@ -161,7 +167,7 @@ if ask_btn and user_q:
                 unsafe_allow_html=True
             )
     except Exception as e:
-        st.error(f"⚠️ Error: {str(e)[:400]}")
+        st.error(f"⚠️ Error: {str(e)[:500]}")
         st.info("If this is a 404, the model name may have changed. If 429, quota exhausted.")
 
 elif ask_btn and not user_q:
