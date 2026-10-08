@@ -49,7 +49,32 @@ with st.sidebar:
     """)
     st.divider()
     st.caption("Built as a Data Science portfolio project")
+ # ---------- Auto-download chroma_db if missing (for Streamlit Cloud) ----------
+CHROMA_ZIP_URL = "https://github.com/emaantahirabbasi/finrag/releases/download/v1.0-db/chroma_db.zip"
+CHROMA_DIR = Path("chroma_db")
 
+def ensure_chroma_db():
+    """Download and extract chroma_db if it doesn't exist."""
+    if CHROMA_DIR.exists() and any(CHROMA_DIR.iterdir()):
+        return
+    
+    import urllib.request
+    import zipfile
+    import tempfile
+    
+    st.info("⏳ Downloading vector database (~39 MB, first run only)...")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
+        urllib.request.urlretrieve(CHROMA_ZIP_URL, tmp.name)
+        zip_path = tmp.name
+    
+    st.info("📦 Extracting...")
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        zf.extractall(".")
+    
+    os.remove(zip_path)
+    st.success("✅ Database ready!")
+
+ensure_chroma_db()
 @st.cache_resource
 def load_chain():
     embeddings = GoogleGenerativeAIEmbeddings(
