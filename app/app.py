@@ -10,6 +10,13 @@ from langchain_core.runnables import RunnablePassthrough
 
 load_dotenv()
 
+# Read from Streamlit secrets if available (for cloud deployment)
+try:
+    if "GEMINI_API_KEY" in st.secrets:
+        os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    pass
+
 CHROMA_DIR = Path("chroma_db")
 MODEL_NAME = "gemini-3.8-flash"
 
