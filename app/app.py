@@ -69,7 +69,7 @@ Question: {question}
 
 Answer:"""
 
-st.header("Ask a question about the filings")
+st.subheader("Ask a question about the filings")
 
 example_qs = [
     "What was Apple's total net sales in 2024?",
